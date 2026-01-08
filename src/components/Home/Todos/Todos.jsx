@@ -118,7 +118,7 @@ export default function Todos() {
     });
 
   return (
-    <section className="todos-container page-content">
+    <section className="todos-container">
        <NavBar />
       <h2>מטלות החורף של {user?.username}</h2>
 
