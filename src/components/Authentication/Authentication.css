@@ -1,0 +1,177 @@
+/* רקע כללי לכל עמודי Authentication */
+.auth-page {
+  min-height: 100vh;
+  background-color: #fff4ef;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+}
+
+/* כרטיס מרכזי */
+.auth-card {
+  background: white;
+  padding: 40px;
+  width: 360px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+/* כותרת הכרטיס */
+.auth-card h2 {
+  margin-bottom: 10px;
+  font-size: 28px;
+  color: #000;
+}
+
+/* טקסט משנה/הוראות */
+.auth-subtitle {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #777;
+}
+
+/* שדות input */
+.auth-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 12px;
+  transition: 0.2s all ease-in-out;
+}
+
+.auth-card input:focus {
+  border-color: #EEDBD6;
+  box-shadow: 0 0 6px #c2a8a1;
+}
+
+/* כפתורים ראשיים */
+.primary-btn {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-radius: 12px;
+  background-color: #EEDBD6;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 12px;
+  transition: 0.2s all ease-in-out;
+}
+
+.primary-btn:hover {
+  background-color: #c2a8a1;
+  color: #fff;
+}
+
+/* כפתורים משניים (למשל ניווטים) */
+.secondary-btn {
+  width: 100%;
+  padding: 12px 0;
+  border: 1px solid #EEDBD6;
+  border-radius: 12px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s all ease-in-out;
+}
+
+.secondary-btn:hover {
+  background-color: #f5e2db;
+}
+
+/* הודעות שגיאה */
+.error {
+  color: red;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+/* טקסט ניווט תחת הכרטיס */
+.auth-footer {
+  font-size: 14px;
+  color: #000;
+  margin-top: 12px;
+}
+
+.auth-footer span {
+  color: #c2a8a1;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 4px;
+  transition: 0.2s color ease-in-out;
+}
+
+.auth-footer span:hover {
+  color: #a07a72;
+}
+
+/* כפתורי הבחירה הראשית במסך Authentication */
+.authentication-container {
+  min-height: 100vh;
+  background-color: #fff4ef;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.authentication-container h2 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #000;
+}
+
+.authentication-container button {
+  width: 180px;
+  padding: 12px 0;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background-color: #EEDBD6;
+  transition: 0.2s all ease-in-out;
+}
+
+.authentication-container button:hover {
+  background-color: #c2a8a1;
+  color: #fff;
+}
+
+/* התאמה לטפסי RegisterDetails */
+.register-details-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 16px;
+  outline: none;
+  margin-bottom: 12px;
+  transition: 0.2s all ease-in-out;
+}
+
+.register-details-card input:focus {
+  border-color: #EEDBD6;
+  box-shadow: 0 0 6px #c2a8a1;
+}
+
+.register-details-card button {
+  width: 100%;
+  padding: 12px 0;
+  border: none;
+  border-radius: 12px;
+  background-color: #EEDBD6;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.2s all ease-in-out;
+}
+
+.register-details-card button:hover {
+  background-color: #c2a8a1;
+  color: #fff;
+}

@@ -1,0 +1,244 @@
+
+/* .todos-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Assistant', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  width: 100%; 
+} */
+
+.page-content {
+  margin-left: 180px; 
+  padding: 40px;
+}
+
+.todos-container {
+    padding: 20px;
+    width: 100vw; /* תופס את כל רוחב המסך */
+    max-width: 100%; 
+    margin: 0 auto;
+    font-family: 'Assistant', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ממרכז את התוכן אופקית */
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+
+.todos-container h2 {
+  color: #B08968;
+  text-shadow:
+    -1px -1px 0 #4E342E,
+    1px -1px 0 #4E342E,
+    -1px 1px 0 #4E342E,
+    1px 1px 0 #4e342ed2;
+
+  font-family: 'Assistant', sans-serif;
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  display: block;
+  /* מבטיח שהכותרת תתנהג כאלמנט שניתן למרכז */
+  /* margin: 0 auto; */
+  margin: 20px auto 40px auto;
+  width: fit-content;
+}
+
+/* אזור הוספת משימה וחיפוש */
+.input-group,
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* עיצוב שדות קלט וסלקטים */
+/* .todos-container input[type="text"],
+.todos-container select,
+.input-group input {
+  background-color: #FAF3E0;
+  border: 2px solid #4E342E;
+  border-radius: 20px;
+  padding: 10px 20px;
+  color: #4E342E;
+  font-weight: bold;
+  outline: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+} */
+
+.controls input, 
+.controls select, 
+.input-group input {
+  background-color: #FAF3E0 !important; /* !important מוודא שזה ידרוס הגדרות קודמות */
+  border: 2px solid #4E342E;
+  border-radius: 25px;
+  padding: 10px 20px;
+  color: #4E342E;
+  font-weight: bold;
+  outline: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* כפתור הוספה (אליפסה בולטת) */
+.input-group button {
+  background-color: #B08968;
+  color: #FAF3E0;
+  border: 2px solid #4E342E;
+  border-radius: 40px;
+  padding: 10px 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.input-group button:hover {
+  background-color: #4E342E;
+   border: 2px solid #FAF3E0;
+   color: #FAF3E0;
+  transform: translateY(-2px);
+}
+
+/* רשימת המשימות במבנה גריד */
+.todo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  
+}
+
+/* .todo-list {
+  display: grid;
+
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+  gap: 25px;
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  max-width: 1000px; 
+  justify-content: center;
+  margin: 0 auto;
+} */
+
+/* כרטיסיית משימה בודדת */
+.todo-item {
+  background-color: #B08968;
+  /* חום קפה */
+  border: 2px solid #4E342E;
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+  position: relative;
+
+  min-height: 150px;
+}
+
+.todo-item:hover {
+  transform: scale(1.02);
+}
+
+/* מספר ה-ID בעיגול קטן */
+.todo-item>span:first-child {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  background-color: #4E342E;
+  color: #FAF3E0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  border: 2px solid #FAF3E0;
+}
+
+/* כותרת המשימה */
+.todo-item span:not(:first-child) {
+  color: #FAF3E0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  min-height: 50px;
+}
+
+/* עיצוב ה-Checkbox */
+.todo-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #4E342E;
+
+  margin: 0 auto 10px auto;
+  transform: scale(1.2);
+  /* צבע הסימון */
+}
+
+/* כפתורי פעולה (עריכה ומחיקה) */
+.actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.actions button {
+  background-color: #FAF3E0;
+  /* שמנת */
+  border: 2px solid #4E342E;
+  border-radius: 50%;
+  /* כפתורים עגולים לאימוג'ים */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.1rem;
+}
+
+.actions button:hover {
+  background-color: #4E342E;
+  border: 2px solid #FAF3E0;
+  /* transform: rotate(10deg); */
+}
+
+/* משימה שבוצעה - מראה קצת יותר שקוף */
+.todo-item.completed {
+  opacity: 0.8;
+  background-color: #B08968;
+}
+
+.controls input[type="text"] {
+  background-color: #FAF3E0; /* צבע שמנת */
+  border: 2px solid #4E342E;
+  border-radius: 25px; /* צורת אליפסה */
+  padding: 10px 20px;
+  color: #4E342E;
+  font-weight: bold;
+  outline: none;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  width: 200px; /* גודל קבוע שייראה יפה בשורה */
+  transition: all 0.3s ease;
+}
+
+.controls input[type="text"]:focus {
+  border-color: #B08968; /* שינוי צבע עדין כשלוחצים עליו */
+  box-shadow: 0 0 8px rgba(176, 137, 104, 0.4);
+}
+

@@ -1,0 +1,172 @@
+/* body {
+  margin: 0;
+  padding: 0;
+  background-color: #fbf5e6;
+  min-height: 100vh;
+} */
+ body {
+    margin: 0;
+    padding: 0;
+    /* החליפי את הנתיב לנתיב המדויק שבו שמרת את התמונה */
+    background-image: url('../../image/p2.jpg'); 
+    
+    /* מבטיח שהתמונה תכסה את כל שטח הפנים של המסך */
+    background-size: cover; 
+    
+    /* ממרכז את התמונה כדי שהחלקים החשובים יהיו באמצע */
+    background-position: center; 
+    
+    /* יוצר אפקט יוקרתי - הרקע נשאר קבוע כשהתוכן נגלל מעליו */
+    background-attachment: fixed; 
+    
+    /* מונע מהתמונה לחזור על עצמה אם התוכן ארוך מאוד */
+    background-repeat: no-repeat; 
+    
+    /* מבטיח שהרקע יתפרס על לפחות 100% מגובה המסך */
+    min-height: 100vh;
+}
+
+/* .home-page {
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+} */
+
+
+
+.home-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* ממרכז את כל הילדים ביחס למרכז המסך */
+    width: 100vw;       /* מבטיח שהקומפוננטה תופסת את כל רוחב הדפדפן */
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;         /* חשוב: לבטל כל padding-left שהיה קודם */
+    position: relative;
+}
+.welcome-header {
+  width: 100%;
+  margin-top: 50px;
+  text-align: center;
+}
+
+/* .welcome-header h1 {
+    color: #4E342E; 
+    text-shadow: 
+        -1px -1px 0 #B08968,  
+         1px -1px 0 #B08968,
+        -1px  1px 0 #B08968,
+         1px  1px 0 #B08968;
+    font-family: 'Assistant', sans-serif;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+} */
+
+.welcome-header h1 {
+  color: #B08968;
+  text-shadow:
+    -1px -1px 0 #4E342E,
+    1px -1px 0 #4E342E,
+    -1px 1px 0 #4E342E,
+    1px 1px 0 #4e342ed2;
+
+  font-family: 'Assistant', sans-serif;
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  display: inline-block; /* מבטיח שהכותרת תתנהג כאלמנט שניתן למרכז */
+  margin: 0 auto;
+}
+
+/* .welcome-header h1 {
+    font-family: 'Assistant', sans-serif;
+    color: #4E342E; 
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgb(179, 145, 145);
+} */
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  /* אחד מתחת לשני */
+  gap: 20px;
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.home-buttons button {
+  background-color: #B08968;
+  /* חום קפה */
+  color: #FAF3E0;
+  /* טקסט שמנת */
+  /* border-radius: 50px; */
+  border-radius: 0 40px 40px 0;
+  border: 2px solid #4E342E;
+  border-left: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  padding: 15px;
+  /* cursor: pointer;
+    text-align: right; 
+    padding-right: 25px; */
+  /*
+    
+    
+    border-radius: 0 40px 40px 0; 
+    border: none;
+     background: #885237;
+    background: #a6724b;
+    color: #FDF8F5; 
+     */
+
+  /* transition: 0.3s; */
+}
+
+.home-buttons button:hover {
+  width: 180px;
+  /* background: #B08968; */
+}
+
+
+
+/* .home-page {
+  text-align: center;
+  padding-top: 40px;
+}
+
+.home-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.home-buttons button {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #6c63ff;
+  color: white;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.home-buttons button:hover {
+  transform: scale(1.05);
+  background-color: #574fd6;
+}
+
+.logout {
+  background-color: #ff5c5c;
+} */
