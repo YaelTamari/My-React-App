@@ -1,326 +1,184 @@
-import { useEffect, useState, useCallback } from "react";
+import NavBar from "../../NavBar/NavBar"
+import { useEffect, useReducer, useState } from "react";
+import { useHttp } from "../../../hook/useHttp";
+import { apiRequest } from "../../../services/api";
+import { useAuth } from "../../../context/AuthContext";
+// import "../Posts/Posts.css";
+import PostItem from "./PostItem";
 import { useParams } from "react-router-dom";
-import { useHttp } from "../../../../hook/useHttp";
-import { apiRequest } from "../../../../services/api";
-import PhotoItem from "./PhotoItem"
 
-const Photos = () => {
-    const { albumId } = useParams();
-    const { sendRequest, isLoading } = useHttp();
-
-    const [photos, setPhotos] = useState([]); // כאן נשמור את כל התמונות שנצברו
-    const [hasMore, setHasMore] = useState(true); // האם יש עוד תמונות בשרת?
-
-    const LIMIT = 4; // נביא 10 תמונות בכל פעם
-
-    const [isAdding, setIsAdding] = useState(false);
-    const [newPhoto, setNewPhoto] = useState({ title: "", url: "" });
+const Posts = () => {
 
 
-    const fetchPhotos = useCallback(async (start) => {
-        const url = `/photos?albumId=${albumId}&_start=${start}&_limit=${LIMIT}`;
-        try {
-            const data = await sendRequest(() => apiRequest(url));
-            if (!data || data.length === 0) {
-                setHasMore(false);
-                return;
-            }
+  const postsReducer = (state, action) => {
+    switch (action.type) {
+      case "SET": return action.payload;
+      case "ADD": return [...state, action.payload];
+      case "UPDATE": return state.map(p => p.id === action.payload.id ? action.payload : p);
+      case "DELETE": return state.filter(p => p.id !== action.payload);
+      default: return state;
+    }
+  };
 
-            setPhotos(prev => {
-                // הגנה נוספת מפני כפילויות
-                const unique = data.filter(newItem => !prev.some(oldItem => oldItem.id === newItem.id));
-                return [...prev, ...unique];
-            });
+  const { userId, postId } = useParams(); // שליפת הפרמטרים מה-URL
+  const { user } = useAuth();
+  const { sendRequest, isLoading, error } = useHttp();
+  const [creatingPost, setCreatingPost] = useState(false);
+  const [newPostTitle, setNewPostTitle] = useState("");
+  const [newPostBody, setNewPostBody] = useState("");
+  // const [selectedPost, setSelectedPost] = useState(null);
+  const [posts, dispatch] = useReducer(postsReducer, []);
+  const [searchType, setSearchType] = useState("title");
+  const [searchValue, setSearchValue] = useState("");
+  const [showAllPosts, setShowAllPosts] = useState(false);
 
-            if (data.length < LIMIT) setHasMore(false);
-        } catch (err) {
-            console.error(err);
-        }
-    }, [albumId, sendRequest]); // בלי photos.length כאן!
+  const selectedPost = posts.find(p => String(p.id) === postId);
 
-    // 2. ה-useEffect לטעינה ראשונית - חייב להיות נקי
-    useEffect(() => {
-        setPhotos([]); // איפוס
-        setHasMore(true);
+  useEffect(() => {
+    if (!user?.id) return;
 
-        // קריאה ראשונה תמיד מאינדקס 0
-        fetchPhotos(0);
-
-    }, [albumId, fetchPhotos]); // רק אלו! // כאן photos.length הוא המפתח
-
-    const loadMoreHandler = () => {
-        fetchPhotos(photos.length); // פשוט מפעילים את הפונקציה שוב
+    const fetchPosts = async () => {
+      const url = showAllPosts ? "/posts" : `/posts?userId=${user.id}`;
+      const data = await sendRequest(() => apiRequest(url));
+      const filteredPosts = showAllPosts
+        ? data
+        : data.filter(p => String(p.userId) === String(user.id));
+      dispatch({ type: "SET", payload: filteredPosts });
     };
 
-    const addPhotoHandler = async (e) => {
-    e.preventDefault();
-    
-    // בדיקה חשובה: ודאי ש-albumId קיים לפני השליחה
-    if (!albumId) {
-        console.error("No album ID found in URL");
-        return;
-    }
+    fetchPosts();
+  }, [sendRequest, user?.id, showAllPosts]);
 
+
+  const saveNewPostHandler = async () => {
+    if (!newPostTitle.trim()) return;
     try {
-        const createdPhoto = await sendRequest(() =>
-            apiRequest("/photos", {
-                method: "POST",
-                body: {
-                    // כאן התיקון: ודאי שהשם תואם בדיוק למה שהשרת מצפה
-                    albumId: albumId, 
-                    title: newPhoto.title,
-                    url: newPhoto.url,
-                    thumbnailUrl: newPhoto.url 
-                }
-            })
-        );
+      const created = await sendRequest(() =>
+        apiRequest("/posts", {
+          method: "POST",
+          body: { title: newPostTitle, body: newPostBody, userId: String(user.id) },
+        })
+      );
 
-        // הוספה למסך עם ה-ID שחזר מהשרת
-        setPhotos(prev => [createdPhoto, ...prev]);
-        
-        // איפוס הטופס
-        setIsAdding(false);
-        setNewPhoto({ title: "", url: "" });
-        
+      dispatch({ type: "ADD", payload: created });
+
+      setNewPostTitle("");
+      setNewPostBody("");
+      setCreatingPost(false);
     } catch (err) {
-        console.error("Failed to add photo", err);
+      console.error("Error creating new post", err);
     }
+  };
+
+  const deletePostsHandler = async (id) => {
+    try {
+      await sendRequest(() => apiRequest(`/posts/${id}`, { method: "DELETE" }));
+      dispatch({ type: "DELETE", payload: id });
+    } catch (err) { }
+  };
+
+  const updatePost = async (id, field, value) => {
+    try {
+      const updated = await sendRequest(() =>
+        apiRequest(`/posts/${id}`, {
+          method: "PATCH",
+          body: { [field]: value },
+        })
+      );
+      dispatch({ type: "UPDATE", payload: updated });
+      // if (selectedPost?.id === id) setSelectedPost(updated);
+    } catch (err) {
+      console.error("Error updating post", err);
+    }
+  };
+
+  const displayedPosts = posts
+    .filter(posts => {
+      if (!searchValue) return true; // אם התיבה ריקה, הצג הכל
+
+      const val = searchValue.toLowerCase();
+
+      // חיפוש לפי ID - עכשיו הוא בודק אם ה-ID *מכיל* את מה שכתבת
+      if (searchType === "id") {
+        return posts.id.toString().includes(val);
+      }
+
+      // ברירת מחדל: חיפוש לפי כותרת (סעיף 53)
+      return posts.title.toLowerCase().includes(val);
+    });
+
+  return (
+
+    <section className="posts-page page-content" >
+      <NavBar />
+      <h2>Posts של {user?.username}</h2>
+
+      {isLoading && <p>טוען פוסטים...</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+
+      <div className="controls">
+        <select
+          value={searchType}
+          onChange={e => setSearchType(e.target.value)}
+        >
+          <option value="title">חיפוש לפי כותרת</option>
+          <option value="id">חיפוש לפי ID</option>
+        </select>
+
+        <input
+          value={searchValue}
+          onChange={e => setSearchValue(e.target.value)}
+          placeholder="חיפוש..."
+        />
+
+        <button onClick={() => setShowAllPosts(prev => !prev)}>
+          {showAllPosts ? "הצג רק את הפוסטים שלי" : "הצג את כל הפוסטים"}
+        </button>
+      </div>
+      <div className="add-post">
+        {!creatingPost ? (
+          <button onClick={() => setCreatingPost(true)}>הוסף פוסט חדש</button>
+        ) : (
+          <div className="new-post-editor">
+            <input
+              type="text"
+              value={newPostTitle}
+              onChange={e => setNewPostTitle(e.target.value)}
+              placeholder="כותרת לפוסט חדש"
+            />
+            <textarea
+              value={newPostBody}
+              onChange={e => setNewPostBody(e.target.value)}
+              placeholder="תוכן הפוסט..."
+              rows={5}
+            />
+            <button onClick={saveNewPostHandler}>שמור</button>
+            <button onClick={() => {
+              setCreatingPost(false);
+              setNewPostTitle("");
+              setNewPostBody("");
+            }}>ביטול</button>
+          </div>
+        )}
+      </div>
+
+
+      <ul className="posts-list">
+        {displayedPosts.map(post => (
+          <PostItem
+            key={post.id}
+            post={post}
+            selectedPost={selectedPost}
+            // onSelect={setSelectedPost}
+            onSelect={(p) => navigate(p ? `/users/${userId}/posts/${p.id}` : `/users/${userId}/posts`)}
+            onDelete={deletePostsHandler}
+            onSaveEdit={updatePost}
+
+          />
+        ))}
+      </ul>
+    </section>
+  );
 };
 
- 
-
-    const handleDataChange = (action) => {
-        if (action.type === "DELETE") {
-            setPhotos(prev => prev.filter(p => p.id !== action.payload));
-        } else if (action.type === "UPDATE") {
-            setPhotos(prev => prev.map(p => p.id === action.payload.id ? action.payload : p));
-        }
-    };
-
-    return (
-        <section className="photos-page">
-            <h2>Photos for Album {albumId}</h2>
-
-            {/* טופס הוספה */}
-            <button onClick={() => setIsAdding(!isAdding)}>
-                {isAdding ? "Cancel" : "Add New Photo"}
-            </button>
-
-            {isAdding && (
-                <form onSubmit={addPhotoHandler} style={{ margin: '20px 0', border: '1px solid #ddd', padding: '15px' }}>
-                    <input
-                        type="text"
-                        placeholder="Photo Title"
-                        value={newPhoto.title}
-                        onChange={(e) => setNewPhoto({ ...newPhoto, title: e.target.value })}
-                        required
-                    />
-                    <input
-                        type="text"
-                        placeholder="Image URL"
-                        value={newPhoto.url}
-                        onChange={(e) => setNewPhoto({ ...newPhoto, url: e.target.value })}
-                        required
-                    />
-                    <button type="submit">Save Photo</button>
-                </form>
-            )}
-
-
-            {/* רשימת התמונות */}
-            <div className="photos-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-                {photos.map(photo => (
-                    <PhotoItem
-                        key={photo.id}
-                        photo={photo}
-                        onDataChange={handleDataChange}
-                    />
-                ))}
-            </div>
-
-            {/* בדיקה: האם יש עוד תמונות והאם אנחנו לא באמצע טעינה */}
-            {hasMore ? (
-                <div style={{ textAlign: 'center', margin: '30px 0' }}>
-                    <button
-                        onClick={loadMoreHandler}
-                        disabled={isLoading}
-
-                    >
-                        {isLoading ? "טוען..." : "טען עוד תמונות"}
-                    </button>
-                </div>
-            ) : (
-                <p style={{ textAlign: 'center', color: '#666', margin: '20px 0' }}>
-                    ✨ הגעת לסוף האלבום - אין תמונות נוספות ✨
-                </p>
-            )}
-        </section>
-    );
-};
-
-export default Photos;
-
-
-
-
-// import { useEffect, useState, useCallback } from "react";
-// import { useParams } from "react-router-dom";
-// import { useHttp } from "../../../../hook/useHttp";
-// import { apiRequest } from "../../../../services/api";
-// import PhotoItem from "./PhotoItem";
-
-// const Photos = () => {
-//     const { albumId } = useParams();
-//     const { sendRequest, isLoading } = useHttp();
-
-//     const [photos, setPhotos] = useState([]); // כאן נשמור את כל התמונות שנצברו
-//     const [hasMore, setHasMore] = useState(true); // האם יש עוד תמונות בשרת?
-
-//     const LIMIT = 6; // נביא 10 תמונות בכל פעם
-
-//     const [isAdding, setIsAdding] = useState(false);
-//     const [newPhoto, setNewPhoto] = useState({ title: "", url: "" });
-
-
-//     const fetchPhotos = useCallback(async (start) => {
-//         const url = `/photos?albumId=${albumId}&_start=${start}&_limit=${LIMIT}`;
-//         try {
-//             const data = await sendRequest(() => apiRequest(url));
-//             if (!data || data.length === 0) {
-//                 setHasMore(false);
-//                 return;
-//             }
-
-//             setPhotos(prev => {
-//                 // הגנה נוספת מפני כפילויות
-//                 const unique = data.filter(newItem => !prev.some(oldItem => oldItem.id === newItem.id));
-//                 return [...prev, ...unique];
-//             });
-
-//             if (data.length < LIMIT) setHasMore(false);
-//         } catch (err) {
-//             console.error(err);
-//         }
-//     }, [albumId, sendRequest]); // בלי photos.length כאן!
-
-//     // 2. ה-useEffect לטעינה ראשונית - חייב להיות נקי
-//     useEffect(() => {
-//         setPhotos([]); // איפוס
-//         setHasMore(true);
-
-//         // קריאה ראשונה תמיד מאינדקס 0
-//         fetchPhotos(0);
-
-//     }, [albumId, fetchPhotos]); // רק אלו! // כאן photos.length הוא המפתח
-
-//     const loadMoreHandler = () => {
-//         fetchPhotos(photos.length); // פשוט מפעילים את הפונקציה שוב
-//     };
-
-//     const addPhotoHandler = async (e) => {
-//         e.preventDefault();
-
-//         // בדיקה חשובה: ודאי ש-albumId קיים לפני השליחה
-//         if (!albumId) {
-//             console.error("No album ID found in URL");
-//             return;
-//         }
-
-//         try {
-//             const createdPhoto = await sendRequest(() =>
-//                 apiRequest("/photos", {
-//                     method: "POST",
-//                     body: {
-//                         // כאן התיקון: ודאי שהשם תואם בדיוק למה שהשרת מצפה
-//                         albumId: albumId,
-//                         title: newPhoto.title,
-//                         url: newPhoto.url,
-//                         thumbnailUrl: newPhoto.url
-//                     }
-//                 })
-//             );
-
-//             // הוספה למסך עם ה-ID שחזר מהשרת
-//             setPhotos(prev => [createdPhoto, ...prev]);
-
-//             // איפוס הטופס
-//             setIsAdding(false);
-//             setNewPhoto({ title: "", url: "" });
-
-//         } catch (err) {
-//             console.error("Failed to add photo", err);
-//         }
-//     };
-
-
-
-//     const handleDataChange = (action) => {
-//         if (action.type === "DELETE") {
-//             setPhotos(prev => prev.filter(p => p.id !== action.payload));
-//         } else if (action.type === "UPDATE") {
-//             setPhotos(prev => prev.map(p => p.id === action.payload.id ? action.payload : p));
-//         }
-//     };
-
-//     return (
-//         <section className="photos-page">
-//             <h2>Photos for Album {albumId}</h2>
-
-//             {/* טופס הוספה */}
-//             <button onClick={() => setIsAdding(!isAdding)}>
-//                 {isAdding ? "Cancel" : "Add New Photo"}
-//             </button>
-
-//             {isAdding && (
-//                 <form onSubmit={addPhotoHandler} style={{ margin: '20px 0', border: '1px solid #ddd', padding: '15px' }}>
-//                     <input
-//                         type="text"
-//                         placeholder="Photo Title"
-//                         value={newPhoto.title}
-//                         onChange={(e) => setNewPhoto({ ...newPhoto, title: e.target.value })}
-//                         required
-//                     />
-//                     <input
-//                         type="text"
-//                         placeholder="Image URL"
-//                         value={newPhoto.url}
-//                         onChange={(e) => setNewPhoto({ ...newPhoto, url: e.target.value })}
-//                         required
-//                     />
-//                     <button type="submit">Save Photo</button>
-//                 </form>
-//             )}
-
-
-//             {/* רשימת התמונות */}
-//             <div className="photos-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-//                 {photos.map(photo => (
-//                     <PhotoItem
-//                         key={photo.id}
-//                         photo={photo}
-//                         onDataChange={handleDataChange}
-//                     />
-//                 ))}
-//             </div>
-
-//             {/* בדיקה: האם יש עוד תמונות והאם אנחנו לא באמצע טעינה */}
-//             {hasMore ? (
-//                 <div style={{ textAlign: 'center', margin: '30px 0' }}>
-//                     <button
-//                         onClick={loadMoreHandler}
-//                         disabled={isLoading}
-
-//                     >
-//                         {isLoading ? "טוען..." : "טען עוד תמונות"}
-//                     </button>
-//                 </div>
-//             ) : (
-//                 <p style={{ textAlign: 'center', color: '#666', margin: '20px 0' }}>
-//                     ✨ הגעת לסוף האלבום - אין תמונות נוספות ✨
-//                 </p>
-//             )}
-//         </section>
-//     );
-// };
-
-// export default Photos;
+export default Posts;

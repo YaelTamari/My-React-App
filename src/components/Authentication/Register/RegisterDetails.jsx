@@ -18,7 +18,7 @@ const RegisterDetails = () => {
   const [lat, setLat] = useState("");
   const [lng, setLng] = useState("");
   const [phone, setPhone] = useState("");
-  const [website, setWebsite] = useState(""); 
+  const [website, setWebsite] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [catchPhrase, setCatchPhrase] = useState("");
   const [bs, setBs] = useState("");
@@ -81,17 +81,16 @@ const RegisterDetails = () => {
 
       // --- השינוי המבוקש כאן ---
       // קבלת המשתמש המלא מהשרת הכולל את ה-ID האמיתי
-      const registeredUser = await res.json(); 
+      const registeredUser = await res.json();
 
       // הסרת המשתמש הזמני
       localStorage.removeItem("pendingUser");
-      
+
       // שליחת המשתמש עם ה-ID לתוך פונקציית ה-login ששומרת ל-LocalStorage
-      login(registeredUser); 
+      login(registeredUser);
       // -------------------------
 
-      navigate("/home");
-
+      navigate(`/users/${registeredUser.id}/home`);
     } catch (err) {
       setError("שגיאה בשרת, נסי שוב");
     }

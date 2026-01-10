@@ -40,8 +40,7 @@ const Login = () => {
 
       // התחברות
       login(userFromServer);
-      navigate("/home");
-
+      navigate(`/users/${userFromServer.id}/home`);
     } catch (err) {
       setError("Server error, please try again later");
     }

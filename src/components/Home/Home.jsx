@@ -15,13 +15,6 @@ const Home = () => {
          <NavBar />
       </header>
 
-      {/* <div className="home-buttons">
-        <button onClick={() => navigate("/info")}>Info</button>
-        <button onClick={() => navigate("/todos")}>Todos</button>
-        <button onClick={() => navigate("/posts")}>Posts</button>
-        <button onClick={() => navigate("/albums")}>Albums</button>
-        <button className="logout" onClick={logout}>Logout</button>
-      </div> */}
     </div>
   );
 };
