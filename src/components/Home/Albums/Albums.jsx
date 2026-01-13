@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from "react";
-import NavBar from "../../NavBar/NavBar";
+// import NavBar from "../../NavBar/NavBar";
 import { useHttp } from "../../../hook/useHttp";
 import { apiRequest } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
@@ -20,6 +20,7 @@ const Albums = () => {
   const { sendRequest, isLoading } = useHttp();
   const [albums, dispatch] = useReducer(albumsReducer, []);
   const { userId } = useParams();
+  const targetUserId = String(userId);
 
   // States לחיפוש
   const [searchType, setSearchType] = useState("title");
@@ -38,7 +39,8 @@ const Albums = () => {
           method: "POST",
           body: {
             title: newAlbumTitle,
-            userId: user.id // שיוך למשתמש המחובר
+            userId: String(user.id)
+            //userId: user.id 
           },
         })
       );
@@ -59,7 +61,8 @@ const Albums = () => {
 
     const fetchAlbums = async () => {
       // שליפת אלבומים של המשתמש הנוכחי בלבד
-      const url = `/albums?userId=${userId}`;
+      //---------------------------
+      const url = `/albums?userId=${targetUserId}`;
       const data = await sendRequest(() => apiRequest(url));
       dispatch({ type: "SET", payload: data });
     };
@@ -73,15 +76,15 @@ const Albums = () => {
 
     const val = searchValue.toLowerCase();
     if (searchType === "id") {
-      return album.id.toString().includes(val);
+      //return album.id.toString().includes(val);
+      return String(album.id) === val;
     }
     return album.title.toLowerCase().includes(val);
   });
 
 
   return (
-    <section className="page-content">
-      <NavBar />
+    <section className="page-content albums-page">
       <h2>My Albums</h2>
 
       {/* כפתור לפתיחת הטופס */}

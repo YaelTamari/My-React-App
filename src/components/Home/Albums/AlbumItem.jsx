@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom"; // חשוב עבור הלינקים
-
+import "../Albums/Albums.css";
 
 const AlbumItem = ({ album }) => {
 

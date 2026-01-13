@@ -1,12 +1,9 @@
-import NavBar from "../../NavBar/NavBar"
 import { useEffect, useReducer, useState } from "react";
 import { useHttp } from "../../../hook/useHttp";
 import { apiRequest } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
-// import "../Todos/TodoItem"
 import "../Todos/Todos.css";
 
-// 1. Reducer לניהול הנתונים (דרישת פרק ו')
 const todosReducer = (state, action) => {
   switch (action.type) {
     case "SET": return action.payload;
@@ -19,9 +16,8 @@ const todosReducer = (state, action) => {
 
 export default function Todos() {
   const { user } = useAuth();
+  const currentUserId = String(user?.id);
   const [todos, dispatch] = useReducer(todosReducer, []);
-
-  // States לניהול הממשק
   const [newTodoTitle, setNewTodoTitle] = useState("");
   const [sortBy, setSortBy] = useState("id");
   const [searchType, setSearchType] = useState("title");
@@ -29,26 +25,23 @@ export default function Todos() {
 
   const { sendRequest, isLoading, error, clearError } = useHttp();
 
-  // 2. טעינת המידע של המשתמש הפעיל בלבד (סעיף 50)
   useEffect(() => {
-    if (!user?.id) return;
     const fetchTodos = async () => {
       try {
-        const data = await sendRequest(() => apiRequest(`/todos?userId=${user.id}`));
+        const data = await sendRequest(() => apiRequest(`/todos?userId=${currentUserId}`));
         dispatch({ type: "SET", payload: data });
       } catch (err) { }
     };
     fetchTodos();
-  }, [sendRequest, user?.id]);
+  }, [sendRequest, user.id]);
 
-  // 3. פעולות CRUD (סעיף 54)
   const addTodoHandler = async () => {
     if (!newTodoTitle.trim()) return;
     try {
       const created = await sendRequest(() =>
         apiRequest("/todos", {
           method: "POST",
-          body: { title: newTodoTitle, completed: false, userId: user.id },
+          body: { title: newTodoTitle, completed: false, userId:currentUserId },
         })
       );
       dispatch({ type: "ADD", payload: created });
@@ -99,7 +92,9 @@ export default function Todos() {
 
       // חיפוש לפי ID - עכשיו הוא בודק אם ה-ID *מכיל* את מה שכתבת
       if (searchType === "id") {
-        return todo.id.toString().includes(val);
+        //return todo.id.toString().includes(val);
+        //------------------
+        return String(todo.id) === val;
       }
 
       // חיפוש לפי מצב (בוצע/לא בוצע)
@@ -119,7 +114,7 @@ export default function Todos() {
 
   return (
     <section className="todos-container">
-       <NavBar />
+       {/* <NavBar /> */}
       <h2>מטלות החורף של {user?.username}</h2>
 
       {/* הוספה */}

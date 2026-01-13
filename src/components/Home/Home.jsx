@@ -1,4 +1,4 @@
-import NavBar from "../NavBar/NavBar"
+// import NavBar from "../NavBar/NavBar"
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./Home.css";
@@ -11,8 +11,8 @@ const Home = () => {
     <div className="home-page">
       
       <header className="welcome-header">
-        <h1>Welcome, {user.name}</h1>
-         <NavBar />
+        <h1>Welcome, {user.username}</h1>
+         {/* <NavBar /> */}
       </header>
 
     </div>

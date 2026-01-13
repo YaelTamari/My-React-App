@@ -1,12 +1,15 @@
-import NavBar from "../../NavBar/NavBar"
+// import NavBar from "../../NavBar/NavBar"
 import { useEffect, useReducer, useState } from "react";
 import { useHttp } from "../../../hook/useHttp";
 import { apiRequest } from "../../../services/api";
 import { useAuth } from "../../../context/AuthContext";
-// import "../Posts/Posts.css";
+import { useParams } from "react-router-dom";
+
+import "../Posts/Posts.css";
 import PostItem from "./PostItem";
 
 const Posts = () => {
+
 
   const postsReducer = (state, action) => {
     switch (action.type) {
@@ -19,6 +22,8 @@ const Posts = () => {
   };
 
   const { user } = useAuth();
+  //-----------------------------
+  const currentUserId = String(user.id);
   const { sendRequest, isLoading, error } = useHttp();
   const [creatingPost, setCreatingPost] = useState(false);
   const [newPostTitle, setNewPostTitle] = useState("");
@@ -29,20 +34,88 @@ const Posts = () => {
   const [searchValue, setSearchValue] = useState("");
   const [showAllPosts, setShowAllPosts] = useState(false);
 
+  //const numericPostId = Number(postId);
+
+  const { postId } = useParams();
+
+  // useEffect(() => {
+  //   if (postId) {
+  //     setShowAllPosts(true);
+  //   }
+  // }, [postId]);
+
+
   useEffect(() => {
-    if (!user?.id) return;
 
     const fetchPosts = async () => {
-      const url = showAllPosts ? "/posts" : `/posts?userId=${user.id}`;
+      
+      const url = showAllPosts ? "/posts" : `/posts?userId=${currentUserId}`;
       const data = await sendRequest(() => apiRequest(url));
-      const filteredPosts = showAllPosts
-        ? data
-        : data.filter(p => String(p.userId) === String(user.id));
-      dispatch({ type: "SET", payload: filteredPosts  });
+      const filteredPosts = showAllPosts ? data : data.filter(p => String(p.userId) === currentUserId);
+      dispatch({ type: "SET", payload: filteredPosts });
     };
 
     fetchPosts();
-  }, [sendRequest, user?.id, showAllPosts]);
+  }, [sendRequest,showAllPosts]);
+
+
+  useEffect(() => {
+  if (!postId || posts.length === 0) {
+    setSelectedPost(null);
+    return;
+  }
+
+  const foundPost = posts.find(p => String(p.id) === postId);
+
+  if (foundPost) {
+    // הפוסט שייך למשתמש
+    setSelectedPost(foundPost);
+  } else {
+    // הפוסט לא שייך לו → פשוט מציגים את כל הפוסטים
+    setSelectedPost(null);
+    setShowAllPosts(true);
+  }
+}, [postId, posts]);
+
+
+
+  // useEffect(() => {
+  //   if (!postId || posts.length === 0) {
+  //     setSelectedPost(null);
+  //     return;
+  //   }
+
+  //   const foundPost = posts.find(p => String(p.id) === postId);
+
+  //   if (foundPost) {
+  //     // הפוסט נמצא ברשימה שנטענה → שייך למשתמש
+  //     setSelectedPost(foundPost);
+  //   } else {
+  //     // הפוסט לא שייך למשתמש → נעבור לכל הפוסטים
+  //     setShowAllPosts(true);
+  //   }
+  // }, [postId, posts]);
+
+
+  // useEffect(() => {
+  //   if (!postId) {
+  //     setSelectedPost(null);
+  //     return;
+  //   }
+
+  //   if (posts.length === 0) return;
+
+  //   const found = posts.find(
+  //     p => String(p.id) === postId
+  //   );
+
+  //   if (found) {
+  //     setSelectedPost(found ?? null);
+  //   }
+  // }, [postId, posts]);
+
+
+
 
   // useEffect(() => {
   //   if (!user?.id) return;
@@ -63,7 +136,8 @@ const Posts = () => {
       const created = await sendRequest(() =>
         apiRequest("/posts", {
           method: "POST",
-          body: { title: newPostTitle, body: newPostBody, userId: String(user.id) },
+          //------------------
+          body: { title: newPostTitle, body: newPostBody, userId: currentUserId },
         })
       );
 
@@ -107,7 +181,8 @@ const Posts = () => {
 
       // חיפוש לפי ID - עכשיו הוא בודק אם ה-ID *מכיל* את מה שכתבת
       if (searchType === "id") {
-        return posts.id.toString().includes(val);
+        // return posts.id.toString().includes(val);
+        return String(posts.id) === val;
       }
 
       // ברירת מחדל: חיפוש לפי כותרת (סעיף 53)
@@ -117,7 +192,7 @@ const Posts = () => {
   return (
 
     <section className="posts-page page-content" >
-       <NavBar />
+      {/* <NavBar /> */}
       <h2>Posts של {user?.username}</h2>
 
       {isLoading && <p>טוען פוסטים...</p>}

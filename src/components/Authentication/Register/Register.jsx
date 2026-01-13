@@ -67,6 +67,14 @@ const Register = () => {
         {error && <p className="error">{error}</p>}
 
         <button type="botton" onClick={handleRegister}>Continue</button>
+
+        <p className="auth-switch">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")} className="link">
+            Login
+          </span>
+        </p>
+
       </div>
     </div>
   );

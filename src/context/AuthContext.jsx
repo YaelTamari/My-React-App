@@ -1,93 +1,62 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {  createContext, useContext, useState, useEffect } from "react";
+import { apiRequest } from "../services/api";
+import { useHttp } from "../hook/useHttp";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // const [user, setUser] = useState(null);
-  const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
-  const [pendingUser, setPendingUser] = useState(null);
-
+  const { sendRequest, isLoading, error } = useHttp();
+ const [user, setUser] = useState(null);
+const [isCheckingUser, setIsCheckingUser] = useState(true);
  
-  useEffect(() => {
+useEffect(() => {
     const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    setIsCheckingUser(false);
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("currentUser", JSON.stringify(userData));
+
+  const login = async (username, password) => {
+    const users = await sendRequest(() =>
+      apiRequest(`/users?username=${username}`)
+    );
+
+    const user = users.find(u => u.website === password);
+    if (!user) {
+      throw new Error("Invalid credentials");
+    }
+
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    setUser({ ...user, idStr: String(user.id) }); 
+
+    return user;
+  };
+
+  const register = async (userData) => {
+    const newUser = await sendRequest(() =>
+      apiRequest("/users", {
+        method: "POST",
+        body: userData
+      })
+    );
+
+    localStorage.setItem("currentUser", JSON.stringify(newUser));
+    setUser({ ...newUser, idStr: String(newUser.id) });
+    return newUser;
   };
 
   const logout = () => {
-    setUser(null);
     localStorage.removeItem("currentUser");
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        pendingUser,
-        setPendingUser
-      }}
-    >
+    <AuthContext.Provider value={{ user, setUser, login, register, logout, isLoading, error,isCheckingUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
-
-
-
-
-
-// import { createContext, useContext, useEffect, useState } from "react";
-
-// const AuthContext = createContext();
-
-// export const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(null);
-//   const [pendingUser, setPendingUser] = useState(null);
-
- 
-//   useEffect(() => {
-//     const storedUser = localStorage.getItem("currentUser");
-//     if (storedUser) {
-//       setUser(JSON.parse(storedUser));
-//     }
-//   }, []);
-
-//   const login = (userData) => {
-//     setUser(userData);
-//     localStorage.setItem("currentUser", JSON.stringify(userData));
-//   };
-
-//   const logout = () => {
-//     setUser(null);
-//     localStorage.removeItem("currentUser");
-//   };
-
-//   return (
-//     <AuthContext.Provider
-//       value={{
-//         user,
-//         login,
-//         logout,
-//         pendingUser,
-//         setPendingUser
-//       }}
-//     >
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = () => useContext(AuthContext);

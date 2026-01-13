@@ -8,13 +8,15 @@ const Authentication = () => {
     <div className="authentication-container">
       <h2>Welcome</h2>
 
-      <button onClick={() => navigate("/login")}>
-        Login
-      </button>
+      <div className="auth-buttons-group">
+        <button onClick={() => navigate("/login")}>
+          Login
+        </button>
 
-      <button onClick={() => navigate("/register")}>
-        Register
-      </button>
+        <button onClick={() => navigate("/register")}>
+          Register
+        </button>
+      </div>
     </div>
   );
 };

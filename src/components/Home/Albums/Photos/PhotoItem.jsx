@@ -1,96 +1,68 @@
-import React, { useState } from "react";
-import Comments from "./Comments/Comments"
-import { Link, useNavigate, useParams} from "react-router-dom";
+import { useState } from "react";
+import { useHttp } from "../../../../hook/useHttp";
+import { apiRequest } from "../../../../services/api";
 
-const PostItem = ({
-  post,
-  selectedPost,
-  onSelect,
-  onDelete,
-  onSaveEdit
-}) => {
-  const navigate = useNavigate();
-  const [editingField, setEditingField] = useState(null); // "title" או "body"
-  const [draftValue, setDraftValue] = useState("");
-  const [showComments, setShowComments] = useState(false);
-  const { userId } = useParams();
+const PhotoItem = ({ photo, onDataChange }) => {
+    const { sendRequest, isLoading } = useHttp();
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedTitle, setEditedTitle] = useState(photo.title);
 
-  const startEditing = (field) => {
-    setEditingField(field);
-    setDraftValue(post[field] ?? "");
-  };
+    // לוגיקת עדכון עצמאית (כמו בטודוס)
+    const updatePhotoHandler = async () => {
+        try {
+            const updated = await sendRequest(() =>
+                apiRequest(`/photos/${photo.id}`, {
+                    method: "PATCH",
+                    body: { title: editedTitle },
+                })
+            );
+            // מעדכנים את האבא רק שהנתונים השתנו (בשביל ה-UI הכללי)
+            onDataChange({ type: "UPDATE", payload: updated });
+            setIsEditing(false);
+        } catch (err) {
+            console.error("Error updating photo", err);
+        }
+    };
 
-  const cancelEditing = () => {
-    setEditingField(null);
-    setDraftValue("");
-  };
+    // לוגיקת מחיקה עצמאית
+    const deletePhotoHandler = async () => {
+        if (!window.confirm("Delete this photo?")) return;
+        try {
+            await sendRequest(() => apiRequest(`/photos/${photo.id}`, { method: "DELETE" }));
+            onDataChange({ type: "DELETE", payload: photo.id });
+        } catch (err) {
+            console.error("Error deleting photo", err);
+        }
+    };
 
-  const saveEditing = () => {
-    if (!draftValue.trim()) return;
-    onSaveEdit(post.id, editingField, draftValue);
-    cancelEditing();
-  };
+    return (
+        <div className="photo-card" style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '8px' }}>
+            <img src={photo.thumbnailUrl} alt={photo.title} style={{ width: '100%' }} />
+            
+            <div className="photo-info" style={{ margin: '10px 0' }}>
+                {isEditing ? (
+                    <>
+                        <input 
+                            type="text" 
+                            value={editedTitle} 
+                            onChange={(e) => setEditedTitle(e.target.value)}
+                        />
+                        <button onClick={updatePhotoHandler} disabled={isLoading}>💾</button>
+                        <button onClick={() => setIsEditing(false)}>❌</button>
+                    </>
+                ) : (
+                    <>
+                        <p>{photo.title}</p>
+                        <button onClick={() => setIsEditing(true)}>✎ Edit</button>
+                    </>
+                )}
+            </div>
 
-  const isSelected = selectedPost?.id === post.id;
-
-  
-  return (
-    <li className={`post-item ${isSelected ? "selected" : ""}`}>
-      <span><strong>{post.id}</strong></span>
-
-      {editingField ? (
-        editingField === "title" ? (
-          <input
-            value={draftValue}
-            onChange={e => setDraftValue(e.target.value)}
-          />
-        ) : (
-          <textarea
-            value={draftValue}
-            onChange={e => setDraftValue(e.target.value)}
-            rows={5}
-          />
-        )
-      ) : (
-        <span>{post.title}</span>
-      )}
-      {isSelected && (
-        <div className="post-body">
-          <p>{post.body}</p>
+            <button onClick={deletePhotoHandler} disabled={isLoading} style={{ color: 'red' }}>
+                {isLoading ? "Deleting..." : "Delete"}
+            </button>
         </div>
-      )}
-      {isSelected && (
-        <button onClick={() => navigate(`/users/${userId}/posts`)}>
-          סגור פוסט
-        </button>
-      )}
-
-      {!isSelected && (
-        <Link to={`/users/${userId}/posts/${post.id}`}>
-          <button>הצג</button>
-        </Link>
-      )}      {!editingField && <button onClick={() => startEditing("title")}>ערוך כותרת</button>}
-      {!editingField && <button onClick={() => startEditing("body")}>ערוך תוכן</button>}
-      <button onClick={() => onDelete(post.id)}>מחק</button>
-
-      {editingField && (
-        <>
-          <button onClick={saveEditing}>שמור</button>
-          <button onClick={cancelEditing}>ביטול</button>
-        </>
-      )}
-      {isSelected && (
-        <button onClick={() => setShowComments(prev => !prev)}>
-          {showComments ? "הסתר תגובות" : "הצג תגובות"}
-        </button>
-      )}
-      {isSelected && showComments && (
-        <Comments postId={post.id} />
-      )}
-
-    </li>
-
-  );
+    );
 };
 
-export default PostItem;
+export default PhotoItem;

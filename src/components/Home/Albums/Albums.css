@@ -1,4 +1,84 @@
-.page-content {
-  margin-left: 180px; /* קצת יותר מרוחב ה־NavBar */
-  padding: 40px;
+/* מרכוז העמוד ומניעת נגיעה בתפריט */
+.photos-page, .albums-page {
+    margin-left: 180px; 
+    padding: 40px 20px;
+    width: calc(100% - 180px); 
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+}
+
+/* כותרות */
+.photos-page h2, .albums-page h2 {
+    color: #B08968;
+    text-shadow: -1px -1px 0 #4E342E, 1px -1px 0 #4E342E, -1px 1px 0 #4E342E, 1px 1px 0 #4e342ed2;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* גריד התמונות */
+.photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+}
+
+/* כרטיס תמונה (פתקית) */
+.photo-card {
+    background-color: #B08968;
+    border: 2px solid #4E342E;
+    border-radius: 20px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.photo-card:hover {
+    transform: translateY(-5px);
+}
+
+.photo-card img {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* הופך את התמונות לריבועיות ואחידות */
+    object-fit: cover;
+    border-radius: 15px;
+    border: 2px solid #4E342E;
+}
+
+.photo-card p {
+    background-color: #FAF3E0;
+    color: #4E342E;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin: 5px 0;
+}
+
+/* כפתורים בתוך כרטיס תמונה (שמנת עם כתב חום) */
+.photo-card button {
+    background-color: #FAF3E0 !important;
+    color: #4E342E !important;
+    border: 2px solid #4E342E;
+    border-radius: 40px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+/* מובייל */
+@media (max-width: 768px) {
+    .photos-page, .albums-page {
+        margin-left: 0;
+        width: 100%;
+    }
 }

@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/AuthContext";
 
 const RegisterDetails = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, register, isLoading, error } = useAuth();
 
   // סטייט לכל השדות הנדרשים
   const [username, setUsername] = useState("");
@@ -23,7 +23,7 @@ const RegisterDetails = () => {
   const [catchPhrase, setCatchPhrase] = useState("");
   const [bs, setBs] = useState("");
 
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
 
   // טעינת נתונים מהשלב הראשון של ההרשמה
   useEffect(() => {
@@ -34,20 +34,9 @@ const RegisterDetails = () => {
     }
     setUsername(pendingUser.username);
     setPassword(pendingUser.password);
-  }, [navigate]);
+  }, []);
 
   const handleRegister = async () => {
-    setError("");
-
-    // בדיקה שכל השדות מלאים
-    if (
-      !name || !email || !street || !suite || !city || !zipcode ||
-      !lat || !lng || !phone || !website || !companyName || !catchPhrase || !bs
-    ) {
-      setError("יש למלא את כל השדות");
-      return;
-    }
-
     const newUser = {
       username,
       website: password,
@@ -69,32 +58,86 @@ const RegisterDetails = () => {
     };
 
     try {
-      const res = await fetch("http://localhost:3001/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newUser),
-      });
+      const user = await register(newUser);
 
-      if (!res.ok) {
-        throw new Error("Registration failed");
-      }
-
-      // --- השינוי המבוקש כאן ---
-      // קבלת המשתמש המלא מהשרת הכולל את ה-ID האמיתי
-      const registeredUser = await res.json();
-
-      // הסרת המשתמש הזמני
+      login(user);
       localStorage.removeItem("pendingUser");
 
-      // שליחת המשתמש עם ה-ID לתוך פונקציית ה-login ששומרת ל-LocalStorage
-      login(registeredUser);
-      // -------------------------
-
-      navigate(`/users/${registeredUser.id}/home`);
+      navigate(`/users/${user.id}/home`);
     } catch (err) {
-      setError("שגיאה בשרת, נסי שוב");
+      console.log(err.message);
     }
   };
+
+  // const handleRegister = async () => {
+  //   try {
+  //     const user = await register(newUser);
+  //     navigate(`/users/${user.id}/home`);
+  //   } catch (err) {
+  //     // error כבר מנוהל ב־useHttp
+  //   }
+  // };
+
+
+  // const handleRegister = async () => {
+  //   setError("");
+
+  //   // בדיקה שכל השדות מלאים
+  //   if (
+  //     !name || !email || !street || !suite || !city || !zipcode ||
+  //     !lat || !lng || !phone || !website || !companyName || !catchPhrase || !bs
+  //   ) {
+  //     setError("יש למלא את כל השדות");
+  //     return;
+  //   }
+
+  //   const newUser = {
+  //     username,
+  //     website: password,
+  //     name,
+  //     email,
+  //     address: {
+  //       street,
+  //       suite,
+  //       city,
+  //       zipcode,
+  //       geo: { lat, lng }
+  //     },
+  //     phone,
+  //     company: {
+  //       name: companyName,
+  //       catchPhrase,
+  //       bs
+  //     }
+  //   };
+
+  //   try {
+  //     const res = await fetch("http://localhost:3001/users", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(newUser),
+  //     });
+
+  //     if (!res.ok) {
+  //       throw new Error("Registration failed");
+  //     }
+
+  //     // --- השינוי המבוקש כאן ---
+  //     // קבלת המשתמש המלא מהשרת הכולל את ה-ID האמיתי
+  //     const registeredUser = await res.json();
+
+  //     // הסרת המשתמש הזמני
+  //     localStorage.removeItem("pendingUser");
+
+  //     // שליחת המשתמש עם ה-ID לתוך פונקציית ה-login ששומרת ל-LocalStorage
+  //     login(registeredUser);
+  //     // -------------------------
+
+  //     navigate(`/users/${registeredUser.id}/home`);
+  //   } catch (err) {
+  //     setError("שגיאה בשרת, נסי שוב");
+  //   }
+  // };
 
   return (
     <div className="auth-page">
@@ -121,6 +164,12 @@ const RegisterDetails = () => {
         {error && <p className="error">{error}</p>}
 
         <button onClick={handleRegister}>סיום רישום</button>
+        <p className="auth-switch">
+          Already registered?{" "}
+          <span onClick={() => navigate("/login")} className="link">
+            Login
+          </span>
+        </p>
       </div>
     </div>
   );

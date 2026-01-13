@@ -4,47 +4,18 @@ import { useAuth } from "../../../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-
+  const { login , error} = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const handleLogin = async () => {
-    setError("");
-
-    if (!username || !password) {
-      setError("Please fill all fields");
-      return;
-    }
-
-    try {
-      // בדיקה מול השרת
-      const res = await fetch(
-        `http://localhost:3001/users?username=${username}`
-      );
-      const users = await res.json();
-
-      if (users.length === 0) {
-        setError("User does not exist");
-        return;
-      }
-
-      const userFromServer = users[0];
-
-      // בדיקת סיסמה (לפי הדרישה – website)
-      if (userFromServer.website !== password) {
-        setError("Incorrect password");
-        return;
-      }
-
-      // התחברות
-      login(userFromServer);
-      navigate(`/users/${userFromServer.id}/home`);
-    } catch (err) {
-      setError("Server error, please try again later");
-    }
-  };
+const handleLogin = async () => {
+  try {
+    const user = await login(username, password);
+    navigate(`/users/${user.id}/home`);
+  }  catch (err) {
+    setError(err.message);
+  }
+};
 
   return (
     <div className="auth-page">

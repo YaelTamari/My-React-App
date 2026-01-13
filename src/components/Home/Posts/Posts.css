@@ -1,14 +1,31 @@
-.page-content {
+/* .page-content {
     margin-left: 180px;
     padding: 40px;
 
-    width: calc(100% - 180px); /* מבטיח שהתוכן לא יחרוג מהמסך */
+    width: calc(100% - 180px); 
     box-sizing: border-box;
     min-height: 100vh;
+} */
+.page-content {
+    /* margin-left: 200px;  */
+    /* padding: 40px; */
+
+    padding-left: 250px;
+    padding-top: 40px;
+    padding-right: 40px;
+
+    width: calc(100% - 200px);
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
+
 .posts-page {
-    padding: 20px;
+    /* margin-left: 180px;  */
+    /* padding: 40px 20px; */
     width: 100%;
     margin: 0 auto;
     font-family: 'Assistant', sans-serif;
@@ -18,7 +35,6 @@
     box-sizing: border-box;
 }
 
-/* כותרת מעוצבת כמו ב-Todos */
 .posts-page h2 {
     color: #B08968;
     text-shadow:
@@ -32,14 +48,8 @@
     margin: 20px auto 40px auto;
 }
 
-/* .controls, .add-post {
-    width: 100%;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap; 
-} */
 
-/* שורת חיפוש ובקרה - אליפסות */
+
 .controls,
 .add-post {
     display: flex;
@@ -49,41 +59,62 @@
     flex-wrap: wrap;
 }
 
-/* עיצוב שדות קלט, סלקטים וכפתורי אליפסה */
+
+
 .posts-page input,
 .posts-page select,
 .posts-page textarea,
-.posts-page button {
+.posts-page>.controls button,
+.posts-page>.add-post button {
     background-color: #FAF3E0;
     border: 2px solid #4E342E;
     border-radius: 25px;
-    /* אליפסה */
     padding: 10px 20px;
     color: #4E342E;
     font-weight: bold;
     outline: none;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
     cursor: pointer;
 }
 
-/* כפתורים בצבע חום בהיר עם כתב שמנת (כמו הוספה) */
+
 .posts-page button {
     background-color: #B08968;
     color: #FAF3E0;
     border-radius: 40px;
 }
 
+
+
+
+.post-item button {
+    background-color: #FAF3E0 !important;
+    color: #4E342E !important;
+    border: 2px solid #4E342E;
+    border-radius: 40px;
+    padding: 8px 15px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.post-item button:hover {
+    background-color: #4E342E !important;
+    color: #FAF3E0 !important;
+}
+
+
+
 .posts-page button:hover {
     background-color: #4E342E;
+    border: 2px solid #FAF3E0;
     color: #FAF3E0;
     transform: translateY(-2px);
 }
 
-/* רשימת הפוסטים - גריד של פתקיות */
 .posts-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); */
+    /* grid-template-columns: repeat(auto-fit, minmax(100px, 200px)); */
     gap: 25px;
     list-style: none;
     padding: 0;
@@ -92,8 +123,9 @@
     justify-content: center;
 }
 
-/* הפתקית הבודדת */
 .post-item {
+    width: 100%;
+
     background-color: #B08968;
     border: 2px solid #4E342E;
     border-radius: 20px;
@@ -110,7 +142,6 @@
     transform: translateY(-5px);
 }
 
-/* ה-ID בעיגול קטן למעלה */
 .post-item>span:first-child {
     position: absolute;
     top: -12px;
@@ -127,7 +158,6 @@
     font-size: 0.9rem;
 }
 
-/* כותרת הפוסט בתוך הפתק */
 .post-item>span:nth-child(2) {
     color: #FAF3E0;
     font-size: 1.4rem;
@@ -137,7 +167,6 @@
     padding-bottom: 10px;
 }
 
-/* תוכן הפוסט כשהוא פתוח */
 .post-body {
     background-color: #FAF3E0;
     color: #4E342E;
@@ -148,7 +177,6 @@
     border: 1px solid #4E342E;
 }
 
-/* אזור התגובות בתוך הפוסט */
 .comments-section {
     margin-top: 20px;
     padding-top: 15px;
@@ -170,7 +198,6 @@
     color: #FAF3E0;
 }
 
-/* עורך פוסט חדש (כשלוחצים על הוספה) */
 .new-post-editor {
     background-color: rgba(176, 137, 104, 0.9);
     padding: 25px;
@@ -183,35 +210,25 @@
     max-width: 500px;
 }
 
-/* @media (max-width: 600px) {
-    .posts-page h2 {
-        font-size: 2rem; 
-    }
-    
-    .page-content {
-        margin-left: 0; 
-        padding: 15px;
-    }
-} */
+
 @media (max-width: 768px) {
     .page-content {
-        margin-left: 0; /* מבטל את הרווח של הנאב הצדדי */
+        margin-left: 0;
         width: 100%;
         padding: 20px;
     }
 
     .posts-page h2 {
-        font-size: 2.4rem; /* הקטנת הכותרת כדי שלא תדחוף את המסך */
-        margin-top: 60px; /* פיצוי במידה והנאב הופך לעליון */
+        font-size: 2.4rem;
+        margin-top: 60px;
     }
 
     .posts-list {
-        /* במסך קטן מאוד - פוסט אחד בשורה שתופס את כל הרוחב הזמין */
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
     }
-    
-    .posts-page input, 
+
+    .posts-page input,
     .posts-page select {
-        width: 90%; /* שהשדות יתכווצו לרוחב המסך */
+        width: 90%;
     }
 }

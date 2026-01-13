@@ -1,5 +1,119 @@
+/* --- הגדרות כלליות לעמוד --- */
 .page-content {
-  margin-left: 180px; /* קצת יותר מרוחב ה־NavBar */
+  margin-left: 200px; /* מוודא מרחק קבוע מהנאב-בר */
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.info-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+/* --- כרטיס הפרופיל (החום הבהיר) --- */
+.profile-card {
+  background: #B08968; /* חום בהיר כפי שביקשת */
+  border: 3px solid #4E342E; /* מסגרת כהה עבה ומרשימה */
+  border-radius: 30px; /* פינות מעוגלות יותר למראה מודרני */
+  box-shadow: 10px 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 450px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+  transform: translateY(-8px);
+}
+
+/* --- החלק העליון (Header) --- */
+.profile-header {
+  background: #4E342E; /* חום כהה כדי לתת עומק */
+  padding: 40px 20px;
+  text-align: center;
+  border-bottom: 2px solid #FAF3E0;
+}
+
+/* העיגול עם האות הראשונה (שמנת עם מסגרת כהה) */
+.avatar {
+  width: 90px;
+  height: 90px;
+  background: #FAF3E0; /* צבע שמנת */
+  color: #4E342E; /* האות בחום כהה */
+  border: 3px solid #4E342E; /* מסגרת כהה לעיגול */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0 auto 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.profile-header h2 {
+  margin: 0;
+  color: #FAF3E0; /* שם המשתמש בשמנת */
+  font-size: 2rem;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.user-tag {
+  color: #B08968; /* תגית המשתמש בחום בהיר */
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+/* --- תוכן הפרטים (צבע שמנת עם כיתוב כהה) --- */
+.profile-content {
+  padding: 30px;
+}
+
+.info-section {
+  background: #FAF3E0; /* רקע שמנת לכל קוביית מידע */
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 15px;
+  border: 2px solid #4E342E; /* מסגרת כהה לכל פרט */
+  box-shadow: 3px 3px 0px #4E342E; /* אפקט "קומיקס" יוקרתי */
+}
+
+.info-section h4 {
+  color: #4E342E; /* כותרת הפרט בחום כהה */
+  border-bottom: 1.5px solid #B08968;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.info-section p {
+  margin: 8px 0;
+  color: #4E342E; /* הטקסט עצמו בחום כהה */
+  line-height: 1.6;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+/* התאמה למובייל */
+@media (max-width: 768px) {
+  .page-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+}
+
+
+/* .page-content {
+  margin-left: 180px;
   padding: 40px;
 }
 
@@ -26,7 +140,7 @@
 }
 
 .profile-header {
-  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); /* מעבר כחול עדין */
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); 
   padding: 40px 20px;
   text-align: center;
   border-bottom: 1px solid #eee;
@@ -80,4 +194,4 @@
   margin: 8px 0;
   color: #34495e;
   line-height: 1.6;
-}
+} */
